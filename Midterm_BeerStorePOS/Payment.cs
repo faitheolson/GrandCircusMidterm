@@ -6,12 +6,7 @@ using System.Threading.Tasks;
 
 namespace Midterm_BeerStorePOS
 {
-    class Program
+    class Payment
     {
-        static void Main(string[] args)
-        {
-            var App = new POSApp();
-            App.StartApp();
-        }
     }
 }

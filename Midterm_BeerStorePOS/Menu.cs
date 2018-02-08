@@ -6,12 +6,10 @@ using System.Threading.Tasks;
 
 namespace Midterm_BeerStorePOS
 {
-    class Program
+    public enum Menu
     {
-        static void Main(string[] args)
-        {
-            var App = new POSApp();
-            App.StartApp();
-        }
+        OrderItems = 1,
+        ViewCart,
+        Exit
     }
 }
