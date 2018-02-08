@@ -10,9 +10,20 @@ namespace Midterm_BeerStorePOS
     {
         public void StartApp()
         {
+            List<Cart> CartItems = new List<Cart>();
             PrintMenu();
-
-            DisplaySelection();
+            Console.WriteLine("Please enter your selection:");
+            string UserInput = Console.ReadLine();
+            if (UserInput == "1")
+            {
+                Console.Clear();
+                List <Beer> BeerSelection = DisplaySelection();
+                AddToCart(BeerSelection, CartItems);
+            }
+            if (UserInput == "2")
+            {
+                //display cart
+            }
             
         }
 
@@ -27,7 +38,7 @@ namespace Midterm_BeerStorePOS
             }
         }
 
-        private void DisplaySelection()
+        private List<Beer> DisplaySelection()
         {
             List<Beer> BeerSelection = new List<Beer>();
 
@@ -45,25 +56,22 @@ namespace Midterm_BeerStorePOS
                 Console.WriteLine($"{i+1,-4}{BeerSelection[i].BeerName,-20}{BeerSelection[i].BeerStyle,-10}{BeerSelection[i].BeerDescription,-20}" +
                     $"{BeerSelection[i].BeerPrice,-10}");
             }
+            return BeerSelection;
         }
 
-        private void AddToCart()
+        private void AddToCart(List<Beer> BeerSelection, List<Cart> CartItems)
         {
-            //List<Cart> CartItems = new List<Cart>();
             
+            Console.WriteLine("Please select item to add to cart:");
+            int ItemInput = int.Parse(Console.ReadLine()) -1 ;
+            Console.WriteLine("Please select quantity:");
+            double QuantityInput = double.Parse(Console.ReadLine());
+            double LineSubtotal = QuantityInput * double.Parse(BeerSelection[ItemInput].BeerPrice);
 
-            //Console.WriteLine("Please make a selection [enter the number]:");
-            //int BeerChoice = int.Parse(Console.ReadLine());
-
-            ////validate that choice is on the BeerSelection list
-
-            //Console.WriteLine("Please enter the quantity:");
-            //int AmountOfBeer = int.Parse(Console.ReadLine());
-
-            ////validate qty
-            //CartItems.Add(new Cart());
-
-
+           CartItems.Add(new Cart(BeerSelection[ItemInput].BeerName,BeerSelection[ItemInput].BeerStyle,
+            BeerSelection[ItemInput].BeerDescription, BeerSelection[ItemInput].BeerPrice, QuantityInput, LineSubtotal));
+                
+           Console.WriteLine($"You've added{BeerSelection[ItemInput].BeerName}. The price is {BeerSelection[ItemInput].BeerPrice}. Line Subtotal: {LineSubtotal}");
         }
     }
 }

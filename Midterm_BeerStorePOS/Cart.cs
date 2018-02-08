@@ -9,14 +9,14 @@ namespace Midterm_BeerStorePOS
     class Cart:Beer
     {
         //properties
-        public int BeerQty { set; get; }
-        public decimal Subtotal { set; get; }
+        public double BeerQty { set; get; }
+        public double Subtotal { set; get; }
 
         //constructor
-        public Cart(string name, string style, string description, string price, int qty, int sub) : base(name, style, description, price)
+        public Cart(string name, string style, string description, string price, double qty, double sub) : base(name, style, description, price)
         {
             BeerQty = qty;
-            Subtotal = qty * decimal.Parse(price);
+            Subtotal = sub;
         }
     }
 }
