@@ -9,14 +9,13 @@ namespace Midterm_BeerStorePOS
 {
     class Validation
     {
-
         public static string validateSelection(string tempInput)
         {
-            
-           // UserInput = Validation.validateSelection(UserInput);
+
+            // UserInput = Validation.validateSelection(UserInput);
             while (true)
             {
-             
+
                 if (Regex.IsMatch(tempInput, "([1-4])"))
                 {
                     return tempInput;
@@ -26,25 +25,45 @@ namespace Midterm_BeerStorePOS
             }
         }
 
-
-
-
-        public static int validateItem(int tempItemInput)
+        public static string validateAddItem(string tempAddItem)
         {
-
-            // UserInput = Validation.validateSelection(UserInput);
             while (true)
             {
-               // Validation.validateItem(ItemInput);
-                if (tempItemInput >=1 && tempItemInput <=12)
+                if ((Regex.IsMatch(tempAddItem, "^(Y|N)$")))
                 {
-                    return  tempItemInput;
+                    return tempAddItem;
                 }
-                Console.WriteLine("Please enter valid input (1-12)");
-                tempItemInput = int.Parse (Console.ReadLine());
+                Console.WriteLine("Please enter a vaild answer!");
+                tempAddItem = Console.ReadLine().ToUpper();
             }
         }
 
+        public static int validateItem(int tempItemInput)
+        {
+            while (true)
+            {
+                // Validation.validateItem(ItemInput);
+                if (tempItemInput >= 1 && tempItemInput <= 12) // switch out to beerSelection.count
+                {
+                    return tempItemInput;
+                }
+                Console.WriteLine("Please enter valid input (1-12)");
+                tempItemInput = int.Parse(Console.ReadLine());
+            }
+        }
 
+        public static string validateQauntity(string tempQauntity)
+        {
+            while (true)
+            {
+                // Validation.validateItem(ItemInput);
+                if (Regex.IsMatch(tempQauntity, "(^[1-9]{1}[0-9]*$)"))
+                {
+                    return tempQauntity;
+                }
+                Console.WriteLine("Please enter valid number");
+                tempQauntity = Console.ReadLine();
+            }
+        }
     }
 }
