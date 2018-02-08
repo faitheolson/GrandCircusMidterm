@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-
 using System.Threading.Tasks;
 
 namespace Midterm_BeerStorePOS
@@ -25,14 +24,18 @@ namespace Midterm_BeerStorePOS
                     List<Beer> BeerSelection = DisplaySelection();
                     AddToCart(BeerSelection, CartItems);
                 }
-                if (UserInput == "2")
+                else if (UserInput == "2")
                 {
                     DisplayCart(CartItems);
                 }
-                if (UserInput == "3")
+                else if (UserInput == "3")
                 {
                     repeat = false;
                     Console.WriteLine("GoodBye!");
+                }
+                else
+                {
+                    Console.WriteLine("Please enter a valid choice!");
                 }
             }
         }
@@ -47,6 +50,7 @@ namespace Midterm_BeerStorePOS
                 Console.WriteLine($"{(int)choice}. {choice}");
             }
         }
+
         private List<Beer> DisplaySelection()
         {
             List<Beer> BeerSelection = new List<Beer>();
@@ -76,7 +80,7 @@ namespace Midterm_BeerStorePOS
                 Console.WriteLine("Please select item to add to cart:");
                 int ItemInput = int.Parse(Console.ReadLine()) - 1;
                 Console.WriteLine("Please select quantity:");
-                double QuantityInput = double.Parse(Validation.validateQauntity(Console.ReadLine()));// keep this
+                double QuantityInput = double.Parse(Validation.validateQauntity(Console.ReadLine()));
                 double LineSubtotal = QuantityInput * double.Parse(BeerSelection[ItemInput].BeerPrice);
 
                 CartItems.Add(new Cart(BeerSelection[ItemInput].BeerName, BeerSelection[ItemInput].BeerStyle,
@@ -84,12 +88,16 @@ namespace Midterm_BeerStorePOS
 
                 Console.WriteLine($"You've added {BeerSelection[ItemInput].BeerName}. The price is {BeerSelection[ItemInput].BeerPrice}. Line Subtotal: {LineSubtotal}");
                 Console.WriteLine("Would you like to add another item? (Y/N)");
-                string UserIntput = Validation.validateAddItem(Console.ReadLine().ToUpper()); // keep this 
-                //while (!Regex.IsMatch(UserIntput,@"^(Y|N)$"))
-                //{
-                //    Console.WriteLine("Please enter a vaild answer!"); Remove this stuff 
-                //    UserIntput = Console.ReadLine().ToUpper();
-                //}
+
+                string UserIntput = Validation.validateAddItem(Console.ReadLine().ToUpper());
+
+                UserIntput = Console.ReadLine().ToUpper();
+                while (!Regex.IsMatch(UserIntput, @"^(Y|N)$"))
+                {
+                    Console.WriteLine("Please enter a vaild answer!");
+                    UserIntput = Console.ReadLine().ToUpper();
+                }
+
                 if (UserIntput == "N")
                 {
                     repeat = false;
@@ -113,15 +121,24 @@ namespace Midterm_BeerStorePOS
             Console.WriteLine();
             Console.WriteLine($"Your shopping cart total is: {CalculateCartTotal(CartItems)}");
             Console.WriteLine($"Your shopping cart tax is: {CalculateCartTotal(CartItems) * (double).06}");
-            Console.WriteLine($"Your order grand total is: {CalculateCartTotal(CartItems) * 1.06}");
+
+            double GrandTotal = CalculateCartTotal(CartItems) * 1.06;
+            Console.WriteLine($"Your order grand total is: {GrandTotal}");
+
             Console.WriteLine();
+
             Console.WriteLine("Would you like to return to the [1]main menu or [2]check out & pay?");
-            string UserInput = Console.ReadLine();
-            if (UserInput == "2")
+
+            int ViewCart = int.Parse(Console.ReadLine());
+
+            if (ViewCart == 2)
+
             {
-                //Go to check out & pay
+                GoToCheckout(GrandTotal, CartItems);
+
             }
         }
+
         public double CalculateCartTotal(List<Cart> CartItems)
         {
             double CartTotal = 0;
@@ -130,6 +147,88 @@ namespace Midterm_BeerStorePOS
                 CartTotal += item.Subtotal;
             }
             return CartTotal;
+        }
+
+        private void PrintCheckoutMenu()
+        {
+            IEnumerable<PaymentChoices> ListOfPaymentTypes = Enum.GetValues(typeof(PaymentChoices)).Cast<PaymentChoices>();
+
+            foreach (PaymentChoices p in ListOfPaymentTypes)
+            {
+                Console.WriteLine($"{(int)p}. {p}");
+            }
+        }
+
+        private void GoToCheckout(double total, List<Cart> CartItems)
+        {
+            Console.WriteLine("How would you like to pay [please enter number of selection]");
+            PrintCheckoutMenu();
+            int ChoosePaymentMethod = int.Parse(Console.ReadLine());
+
+            if (ChoosePaymentMethod == 1)
+            {
+                CashPayment(total);
+                EmptyCart(CartItems);
+                Console.Read();
+            }
+            else if(ChoosePaymentMethod == 2)
+            {
+                CreditPayment(total);
+                Console.Read();
+            }
+            else if(ChoosePaymentMethod == 3)
+            {
+                CheckPayment(total);
+                Console.Read();
+            }
+            else
+            {
+                Console.WriteLine("WRONG!");
+            }
+        }
+
+        public void CashPayment(double total)
+        {
+            Console.WriteLine("How much money have you received?");
+            double dollars = double.Parse(Console.ReadLine()); // validate this input
+            double change = 0;
+
+            if (dollars >= total)
+            {
+                change = dollars - total;
+                Console.WriteLine($"Thank you for your payment of {dollars}. Your change is {change}");
+            }
+            else
+            {
+                Console.WriteLine("Insufficient funds!");
+            }
+        }
+
+        public void CreditPayment(double total)
+        {
+            Console.WriteLine("Please enter the card information:");
+            string CardNumber = Console.ReadLine(); //prompt
+            string CCV = Console.ReadLine(); //prompt
+            string Expiration = Console.ReadLine(); //prompt, ensure format is acceptable (regex?)
+            string lastfour = CardNumber.Substring(CardNumber.Length - 4);
+
+            Console.WriteLine($"Thank you! {total} has been charged to card ending in {lastfour}.");
+        }
+
+        public void CheckPayment(double total)
+        {
+            Console.WriteLine("Please enter the check number:"); //validate
+            string CheckNumber = Console.ReadLine();
+
+            Console.WriteLine($"Thank you! Check {CheckNumber} has been received for {total}.");
+        }
+
+        public void EmptyCart(List<Cart> CartItems)
+        {
+            for(int i = 0;  i<=CartItems.Count - 1; i = 0)
+            {
+                CartItems.Remove(CartItems[i]);
+            }
         }
     }
 }

@@ -16,7 +16,7 @@ namespace Midterm_BeerStorePOS
         public string CheckNumber { set; get; }
 
         #region METHODS
-        //for cash payment
+
         public void CashPayment (double dollars, double total)
         {
             GrandTotal = total;
