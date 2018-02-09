@@ -15,17 +15,17 @@ namespace Midterm_BeerStorePOS
         public void StartApp()
         {
             bool repeat = true;
-            List<Cart> CartItems = new List<Cart>();
 
             while (repeat)
             {
+                List<Beer> BeerSelection = CreateList();
+                List<Cart> CartItems = new List<Cart>();
                 PrintMenu();
                 UserInput = Validation.ValidateSelection("Please enter your selection by number:"); //changed from string to console key
-                
                 if (UserInput == ConsoleKey.D1 || UserInput == ConsoleKey.NumPad1)
                 {
                     Console.Clear();
-                    List<Beer> BeerSelection = DisplaySelection();
+                    DisplaySelection(BeerSelection);
                     AddToCart(BeerSelection, CartItems);
                 }
                 else if (UserInput == ConsoleKey.D2|| UserInput == ConsoleKey.NumPad2)
@@ -35,13 +35,13 @@ namespace Midterm_BeerStorePOS
                 else if (UserInput == ConsoleKey.D3 || UserInput == ConsoleKey.NumPad3)
                 {
                     Console.Clear();
-                    Console.WriteLine("You do not have permissions to modify the inventory!");
-                    System.Threading.Thread.Sleep(1000);
+                    RunInventoryManager("../../ProductList.txt", BeerSelection);
                     Console.Clear();
                 }
                 else
                 {
                     repeat = false;
+                    Console.Clear();
                     Console.WriteLine("Goodbye!");
                 }
             }
@@ -58,7 +58,7 @@ namespace Midterm_BeerStorePOS
             }
         }
 
-        private List<Beer> DisplaySelection()
+        private List<Beer> CreateList()
         {
             List<Beer> BeerSelection = new List<Beer>();
 
@@ -67,7 +67,11 @@ namespace Midterm_BeerStorePOS
                 string[] temp = b.Split(',');
                 BeerSelection.Add(new Beer(temp[0], temp[1], temp[2], temp[3]));
             }
+            return BeerSelection;
+        }
 
+        private void DisplaySelection(List<Beer> BeerSelection)
+        {
             Console.WriteLine($"{"Beer",-20}{"Style",-10}{"Package",-20}{"Price",-10}");
             //continue header format
 
@@ -76,7 +80,7 @@ namespace Midterm_BeerStorePOS
                 Console.WriteLine($"{i + 1,-4}{BeerSelection[i].BeerName,-20}{BeerSelection[i].BeerStyle,-10}{BeerSelection[i].BeerDescription,-20}" +
                     $"{BeerSelection[i].BeerPrice,-10}");
             }
-            return BeerSelection;
+            
         }
 
         private void AddToCart(List<Beer> BeerSelection, List<Cart> CartItems)
@@ -120,7 +124,7 @@ namespace Midterm_BeerStorePOS
                 else
                 {
                     Console.Clear();
-                    DisplaySelection();
+                    DisplaySelection(BeerSelection);
                 }
             }
         }
@@ -282,6 +286,31 @@ namespace Midterm_BeerStorePOS
         public void AddNewBeer() //Put this in Add Beer to Inventory Option
         {
             Beer.AppendBeerList("../../ProductList.txt", Beer.NewBeerString());
+            List<Beer> BeerSelection = CreateList();
+        }
+
+        public void RunInventoryManager(string FileName, List<Beer> BeerSelection)
+        {
+            Console.WriteLine($"[1] ADD NEW BEER TO INVENTORY\n[2] REMOVE BEER FROM INVENTORY\n[3] RETURN TO MAIN MENU");
+            string UserInput = Console.ReadLine();
+            while (!Regex.IsMatch(UserInput,@"^1|2|3$"))
+            {
+                Console.WriteLine("Please enter valid entry!");
+            }
+            if (UserInput == "1")
+            {
+                AddNewBeer();
+            }
+            else if (UserInput == "2")
+            {
+                Console.Clear();
+                DisplaySelection(BeerSelection);
+                Beer.RemoveBeer(FileName, BeerSelection);
+            }
+            else if (UserInput == "3")
+            {
+
+            }
         }
     }
 }
