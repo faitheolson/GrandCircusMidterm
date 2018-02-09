@@ -10,6 +10,7 @@ namespace Midterm_BeerStorePOS
     {
         OrderItems = 1,
         ViewCart,
+        InventoryManager,
         Exit
     }
 }

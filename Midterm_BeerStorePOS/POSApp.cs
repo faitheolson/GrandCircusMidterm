@@ -10,33 +10,39 @@ namespace Midterm_BeerStorePOS
 {
     class POSApp
     {
+        public ConsoleKey UserInput { get; set; }
+
         public void StartApp()
         {
             bool repeat = true;
             List<Cart> CartItems = new List<Cart>();
+
             while (repeat)
             {
                 PrintMenu();
-                Console.WriteLine("Please enter your selection:");
-                string UserInput = Console.ReadLine();
-                if (UserInput == "1")
+                UserInput = Validation.ValidateSelection("Please enter your selection by number:"); //changed from string to console key
+                
+                if (UserInput == ConsoleKey.D1 || UserInput == ConsoleKey.NumPad1)
                 {
                     Console.Clear();
                     List<Beer> BeerSelection = DisplaySelection();
                     AddToCart(BeerSelection, CartItems);
                 }
-                else if (UserInput == "2")
+                else if (UserInput == ConsoleKey.D2|| UserInput == ConsoleKey.NumPad2)
                 {
                     DisplayCart(CartItems);
                 }
-                else if (UserInput == "3")
+                else if (UserInput == ConsoleKey.D3 || UserInput == ConsoleKey.NumPad3)
                 {
-                    repeat = false;
-                    Console.WriteLine("GoodBye!");
+                    Console.Clear();
+                    Console.WriteLine("You do not have permissions to modify the inventory!");
+                    System.Threading.Thread.Sleep(1000);
+                    Console.Clear();
                 }
                 else
                 {
-                    Console.WriteLine("Please enter a valid choice!");
+                    repeat = false;
+                    Console.WriteLine("Goodbye!");
                 }
             }
         }
@@ -78,28 +84,36 @@ namespace Midterm_BeerStorePOS
             bool repeat = true;
             while (repeat)
             {
-                Console.WriteLine("Please select item to add to cart:");
-                int ItemInput = int.Parse(Console.ReadLine()) - 1;
-                Console.WriteLine("Please select quantity:");
-                double QuantityInput = double.Parse(Validation.validateQauntity(Console.ReadLine()));
-                double LineSubtotal = QuantityInput * double.Parse(BeerSelection[ItemInput].BeerPrice);
-
-                CartItems.Add(new Cart(BeerSelection[ItemInput].BeerName, BeerSelection[ItemInput].BeerStyle,
-                BeerSelection[ItemInput].BeerDescription, BeerSelection[ItemInput].BeerPrice, QuantityInput, LineSubtotal));
-
-                Console.WriteLine($"You've added {BeerSelection[ItemInput].BeerName}. The price is {BeerSelection[ItemInput].BeerPrice}. Line Subtotal: {LineSubtotal}");
-                Console.WriteLine("Would you like to add another item? (Y/N)");
-
-                string UserIntput = Validation.validateAddItem(Console.ReadLine().ToUpper());
-
-                UserIntput = Console.ReadLine().ToUpper();
-                while (!Regex.IsMatch(UserIntput, @"^(Y|N)$"))
+                //user chooses item
+                Console.Write($"Please select item to add to cart <1 - {BeerSelection.Count}>: ");
+                string ItemInput = Console.ReadLine();
+                while (Validation.ValidateItemChoice(ItemInput, BeerSelection) == false)
                 {
-                    Console.WriteLine("Please enter a vaild answer!");
-                    UserIntput = Console.ReadLine().ToUpper();
+                    Console.Write($"Invalid choice! Please select item to add to cart <1 - {BeerSelection.Count}>: ");
+                    ItemInput = Console.ReadLine();
                 }
+                int ItemNumber = int.Parse(ItemInput) - 1;
 
-                if (UserIntput == "N")
+                //get quantity
+                Console.Write("Please enter quantity: ");
+                double QuantityInput = double.Parse(Validation.ValidateQuantity(Console.ReadLine()));
+
+                //calc subtotal
+                double LineSubtotal = QuantityInput * double.Parse(BeerSelection[ItemNumber].BeerPrice);
+
+                //add item selected to cart
+                CartItems.Add(new Cart(BeerSelection[ItemNumber].BeerName, BeerSelection[ItemNumber].BeerStyle,
+                BeerSelection[ItemNumber].BeerDescription, BeerSelection[ItemNumber].BeerPrice, QuantityInput, LineSubtotal));
+
+                Console.WriteLine($"ADDED TO CART: {BeerSelection[ItemNumber].BeerName}\tPRICE{BeerSelection[ItemNumber].BeerPrice}\tQTY: {QuantityInput}" +
+                    $"\tITEM SUBTOTAL: {LineSubtotal}");
+
+                Console.WriteLine();
+
+                //continue or not
+                UserInput = Validation.CheckYorN("Would you like to add another item? <Y or N>");
+
+                if (UserInput == ConsoleKey.N)
                 {
                     repeat = false;
                 }
@@ -113,30 +127,61 @@ namespace Midterm_BeerStorePOS
 
         private void DisplayCart(List<Cart> CartItems)
         {
+            //print items added to cart
             Console.Clear();
-            Console.WriteLine("Your shopping cart contains the following products:");
+            Console.WriteLine($"{"ITEM", -20}{"PRICE", -10}{"QTY",-5}{"SUBTOTAL",-10}");
+
             foreach (Cart item in CartItems)
             {
-                Console.WriteLine($"{item.BeerName,-25}{item.BeerPrice,-5}{item.BeerQty,-5}{item.Subtotal,-5}");
+                Console.WriteLine($"{item.BeerName, -20}\t{item.BeerPrice,-10}\t{item.BeerQty,-5}\t{item.Subtotal,-10}");
             }
             Console.WriteLine();
-            Console.WriteLine($"Your shopping cart total is: {CalculateCartTotal(CartItems)}");
-            Console.WriteLine($"Your shopping cart tax is: {CalculateCartTotal(CartItems) * (double).06}");
 
-            double GrandTotal = CalculateCartTotal(CartItems) * 1.06;
-            Console.WriteLine($"Your order grand total is: {GrandTotal}");
+            //calculate and display costs
+            double Subtotal = CalculateCartTotal(CartItems);
+            double TaxOwed = (Subtotal * 1.06) - Subtotal;
+            double GrandTotal = Subtotal + TaxOwed;
+
+            Console.WriteLine($"SUBTOTAL:\t{Subtotal}");
+            Console.WriteLine($"TAX:\t\t{TaxOwed}");
+            Console.WriteLine($"ORDER TOTAL:\t{GrandTotal}");
 
             Console.WriteLine();
 
-            Console.WriteLine("Would you like to return to the [1]main menu or [2]check out & pay?");
+            Console.WriteLine("[1]Main Menu\n[2]Check Out\n[3]Empty Cart");
 
             int ViewCart = int.Parse(Console.ReadLine());
 
-            if (ViewCart == 2)
-
+            if (ViewCart == 1)
+            {
+                PrintMenu();
+            }
+            else if (ViewCart == 2 && GrandTotal > 0)
             {
                 GoToCheckout(GrandTotal, CartItems);
+            }
+            else if (ViewCart == 2 && GrandTotal == 0)
+            {
+                Console.Clear();
+                Console.WriteLine("You don't have anything in your cart! Going back to main menu.");
+                System.Threading.Thread.Sleep(1000);
+                PrintMenu();
+            }
+            else
+            {
+                Console.WriteLine("Are you sure you want to empty your shopping cart? (<Y> or <N>)");
+                ConsoleKey AreYouSure = Console.ReadKey().Key;
 
+                if (AreYouSure == ConsoleKey.Y)
+                {
+                    EmptyCart(CartItems);
+                    DisplayCart(CartItems);
+                }
+                else
+                {
+                    Console.Clear();
+                    DisplayCart(CartItems);
+                }
             }
         }
 
@@ -162,7 +207,7 @@ namespace Midterm_BeerStorePOS
 
         private void GoToCheckout(double total, List<Cart> CartItems)
         {
-            Console.WriteLine("How would you like to pay [please enter number of selection]");
+            Console.WriteLine("Please select the number of the payment type:");
             PrintCheckoutMenu();
             int ChoosePaymentMethod = int.Parse(Console.ReadLine());
 
@@ -180,11 +225,13 @@ namespace Midterm_BeerStorePOS
             else if (ChoosePaymentMethod == 3)
             {
                 CheckPayment(total);
+                EmptyCart(CartItems);
                 Console.Read();
             }
             else
             {
-                Console.WriteLine("WRONG!");
+                Console.Clear();
+                PrintMenu();
             }
         }
 
@@ -232,7 +279,7 @@ namespace Midterm_BeerStorePOS
             }
         }
 
-        public void AddNewBeer() //Put this in Add Beer to Inventory Optino
+        public void AddNewBeer() //Put this in Add Beer to Inventory Option
         {
             Beer.AppendBeerList("../../ProductList.txt", Beer.NewBeerString());
         }

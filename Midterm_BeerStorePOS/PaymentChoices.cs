@@ -11,6 +11,7 @@ namespace Midterm_BeerStorePOS
     {
         Cash = 1,
         Credit,
-        Check
+        Check,
+        GoBack
     }
 }

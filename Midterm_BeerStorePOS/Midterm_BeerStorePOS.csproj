@@ -45,7 +45,6 @@
     <Compile Include="Beer.cs" />
     <Compile Include="Cart.cs" />
     <Compile Include="Menu.cs" />
-    <Compile Include="Payment.cs" />
     <Compile Include="PaymentChoices.cs" />
     <Compile Include="POSApp.cs" />
     <Compile Include="Program.cs" />
