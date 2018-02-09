@@ -242,13 +242,14 @@ namespace Midterm_BeerStorePOS
         public void CashPayment(double total)
         {
             Console.WriteLine("How much money have you received?");
-            double dollars = double.Parse(Console.ReadLine()); // validate this input
+            double dollars = double.Parse( Validation.ValidateMoneyRecieved( Console.ReadLine())); // validate this input
             double change = 0;
 
             if (dollars >= total)
             {
                 change = dollars - total;
-                Console.WriteLine($"Thank you for your payment of {dollars}. Your change is {change}");
+                Console.WriteLine($"Thank you for your payment of {dollars.ToString(("C2"))}. Your change is {change.ToString(("C2"))}");
+                Console.ReadKey();
             }
             else
             {
@@ -259,9 +260,11 @@ namespace Midterm_BeerStorePOS
         public void CreditPayment(double total)
         {
             Console.WriteLine("Please enter the card information:");
-            string CardNumber = Console.ReadLine(); //prompt
-            string CCV = Console.ReadLine(); //prompt
-            string Expiration = Console.ReadLine(); //prompt, ensure format is acceptable (regex?)
+            string CardNumber = Validation.ValidateCredNumber( Console.ReadLine()); //prompt
+            Console.WriteLine("Please enter CCV");
+            string CCV = Validation.ValidateCCV (Console.ReadLine()); //prompt
+            Console.WriteLine("Please enter the Expiration date on your card:");
+            string Expiration = Validation.ValidateExpDate (Console.ReadLine()); //prompt, ensure format is acceptable (regex?)
             string lastfour = CardNumber.Substring(CardNumber.Length - 4);
 
             Console.WriteLine($"Thank you! {total} has been charged to card ending in {lastfour}.");
@@ -270,7 +273,7 @@ namespace Midterm_BeerStorePOS
         public void CheckPayment(double total)
         {
             Console.WriteLine("Please enter the check number:"); //validate
-            string CheckNumber = Console.ReadLine();
+            string CheckNumber = Validation.ValidateCheck(Console.ReadLine());
 
             Console.WriteLine($"Thank you! Check {CheckNumber} has been received for {total}.");
         }

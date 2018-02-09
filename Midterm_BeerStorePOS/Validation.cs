@@ -11,6 +11,7 @@ namespace Midterm_BeerStorePOS
     {
         public static ConsoleKey ValidateSelection(string message)
         {
+            
             //since i changed the logic for the menu to read the key entered, I changed this valdiation
             {
                 Console.WriteLine(message);
@@ -99,8 +100,79 @@ namespace Midterm_BeerStorePOS
                 {
                     return tempQuantity;
                 }
-                Console.Write("Invalid number! Please enter quantity: ");
+                Console.WriteLine("Invalid number! Please enter quantity: ");
                 tempQuantity = Console.ReadLine();
+            }
+        }
+
+        public static string ValidateCredNumber(string tempCredNumber)
+        {
+            while (true)
+            {
+                if (Regex.IsMatch(tempCredNumber, "(^([0-9]{4}[-][0-9]{4}[-][0-9]{4}[-][0-9]{4})$)"))
+                {
+                    return tempCredNumber;
+                }
+                Console.WriteLine("Invalid Format! ");
+                tempCredNumber = Console.ReadLine();
+
+            }
+        }
+        public static string ValidateCCV(string tempCCV)
+        {
+            while (true)
+            {
+                if (Regex.IsMatch(tempCCV, "(^([0-9]{3,4})$)"))
+                {
+                    return tempCCV;
+                }
+                else
+                {
+
+                Console.WriteLine("Invalid Format! Enter a 3 digit or 4 digit CCV. ");
+                tempCCV = Console.ReadLine();
+                 
+                }
+            }
+        }
+        public static string ValidateExpDate(string tempExpDate)
+        {
+            while (true)
+            {
+                if (Regex.IsMatch(tempExpDate, @"(^(1[0-2]|0[1-9]|[1-9])\/(20\d{2}|19\d{2}|0(?!0)\d|[1-9]\d)+$)"))
+                {
+                    return tempExpDate;
+                }
+                Console.WriteLine("Invalid Format! Try MM/YY or MM/YYYY ");
+                tempExpDate = Console.ReadLine();
+            }
+        }
+
+        public static string ValidateMoneyRecieved(string tempMoneyRecieved)
+        {
+            while(true)
+            {
+
+            if(Regex.IsMatch(tempMoneyRecieved, @"(^\$?(\d{1,3},?(\d{3},?)*\d{3}(.\d{ 3})?|\d{1,3}(.\d{2})?)$)"))
+            {
+                return tempMoneyRecieved;
+            }
+            Console.WriteLine("invalid Format! Provide Decimals and Commas if needed");
+            tempMoneyRecieved = Console.ReadLine();
+            }
+        }
+        public static string ValidateCheck(string tempCheck)
+        {
+            while (true)
+            {
+
+                if (Regex.IsMatch(tempCheck, @"^(\d{9} \d{6} \d{3})?$"))  // <=== This is actual check format 9 numbers space 6 numbers 3 numbers
+                {
+                    return tempCheck;
+                }
+                Console.WriteLine("invalid Format! Please enter 16 digit check number.");
+                tempCheck = Console.ReadLine();
+                // @"^[0-9]\d{16}?$"
             }
         }
     }
