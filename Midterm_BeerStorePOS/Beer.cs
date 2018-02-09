@@ -42,6 +42,29 @@ namespace Midterm_BeerStorePOS
 
             return BeerList;
         }
+        //add beer to the productlist file
+        public static void AppendBeerList(string FileName, string Input)
+        {
+            StreamWriter Writer = new StreamWriter(FileName, true);
 
+            Writer.WriteLine(Input);
+
+            Writer.Close();
+
+        }
+
+        public static string NewBeerString()
+        {
+            Console.WriteLine("Please enter beer Name:");
+            string name = Console.ReadLine();
+            Console.WriteLine("Please enter beer Style:");
+            string style = Console.ReadLine();
+            Console.WriteLine("Please enter beer description:");
+            string description = Console.ReadLine();
+            Console.WriteLine("Please enter beer price:");
+            string price = Console.ReadLine();
+            string NewBeerString = $"{name}, {style}, {description}, {price}";
+            return NewBeerString;
+        }
     }
 }

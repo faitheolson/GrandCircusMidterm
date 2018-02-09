@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.IO;
 
 namespace Midterm_BeerStorePOS
 {
@@ -171,12 +172,12 @@ namespace Midterm_BeerStorePOS
                 EmptyCart(CartItems);
                 Console.Read();
             }
-            else if(ChoosePaymentMethod == 2)
+            else if (ChoosePaymentMethod == 2)
             {
                 CreditPayment(total);
                 Console.Read();
             }
-            else if(ChoosePaymentMethod == 3)
+            else if (ChoosePaymentMethod == 3)
             {
                 CheckPayment(total);
                 Console.Read();
@@ -225,10 +226,15 @@ namespace Midterm_BeerStorePOS
 
         public void EmptyCart(List<Cart> CartItems)
         {
-            for(int i = 0;  i<=CartItems.Count - 1; i = 0)
+            for (int i = 0; i <= CartItems.Count - 1; i = 0)
             {
                 CartItems.Remove(CartItems[i]);
             }
+        }
+
+        public void AddNewBeer() //Put this in Add Beer to Inventory Optino
+        {
+            Beer.AppendBeerList("../../ProductList.txt", Beer.NewBeerString());
         }
     }
 }
