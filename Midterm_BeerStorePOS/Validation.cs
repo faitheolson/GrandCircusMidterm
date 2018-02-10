@@ -41,7 +41,6 @@ namespace Midterm_BeerStorePOS
             return input;
         }
 
-
         public static bool ValidateItemChoice(string tempItemInput, List<Beer> Inventory) //updated this to take a list to make the length flexible
         {
             if (Regex.Match(tempItemInput, @"^[1-9]{1}[0-9]*$").Success)//must contain number starting at 1 or more
@@ -72,7 +71,6 @@ namespace Midterm_BeerStorePOS
             }
         }
 
-
         public static string ValidateCredNumber(string tempCredNumber)
         {
             while (true)
@@ -81,11 +79,12 @@ namespace Midterm_BeerStorePOS
                 {
                     return tempCredNumber;
                 }
-                Console.WriteLine("Invalid Format! ");
+                Console.WriteLine("Invalid format!");
                 tempCredNumber = Console.ReadLine();
 
             }
         }
+
         public static string ValidateCCV(string tempCCV)
         {
             while (true)
@@ -103,6 +102,7 @@ namespace Midterm_BeerStorePOS
                 }
             }
         }
+
         public static string ValidateExpDate(string tempExpDate)
         {
             while (true)
@@ -111,7 +111,7 @@ namespace Midterm_BeerStorePOS
                 {
                     return tempExpDate;
                 }
-                Console.WriteLine("Invalid Format! Try MM/YY or MM/YYYY ");
+                Console.Write("INVALID. PLEASE ENTER EXPIRATION DATE <MM/YY> OR <MM/YYYY>: ");
                 tempExpDate = Console.ReadLine();
             }
         }
@@ -121,14 +121,15 @@ namespace Midterm_BeerStorePOS
             while(true)
             {
 
-            if(Regex.IsMatch(tempMoneyRecieved, @"(^\$?(\d{1,3},?(\d{3},?)*\d{3}(.\d{ 3})?|\d{1,3}(.\d{2})?)$)"))
+            if(Regex.IsMatch(tempMoneyRecieved, @"^[1-9]{1}[0-9]*[.]{1}[0-9]{2}$")) //simplified this to exclude commas - must not start with 0 and must end with .nn
             {
                 return tempMoneyRecieved;
             }
-            Console.WriteLine("invalid Format! Provide Decimals and Commas if needed");
+            Console.Write("INVALID INPUT. PLEASE ENTER CASH TENDERED: ");
             tempMoneyRecieved = Console.ReadLine();
             }
         }
+
         public static string ValidateCheck(string tempCheck)
         {
             while (true)
@@ -138,12 +139,10 @@ namespace Midterm_BeerStorePOS
                 {
                     return tempCheck;
                 }
-                Console.WriteLine("invalid Format! Please enter 16 digit check number.");
+                Console.WriteLine("INVALID. ENTER CHECK NUMBER <XXXXXXXXX XXXXXX XXX, including spaces>:");
                 tempCheck = Console.ReadLine();
-                // @"^[0-9]\d{16}?$"
             }
         }
-
 
         public static string CheckBeerPriceEntry(string input)
         {
@@ -181,29 +180,52 @@ namespace Midterm_BeerStorePOS
             }
         }
 
-        public static DateTime ValidateDOB(string input)
+        public static ConsoleKey ValidateCartAction (string message)
         {
-            string dateFormat = "yyyy/MM/dd";
-            input = Console.ReadLine();
-            DateTime Birthday;
-            bool check = true;
-
-            while (check == true)
             {
-                if (DateTime.TryParseExact(input, dateFormat, CultureInfo.InvariantCulture,
-                   DateTimeStyles.None, out Birthday))
+                Console.Write(message);
+                ConsoleKey input = Console.ReadKey().Key;
+                while (input != ConsoleKey.D1 && input != ConsoleKey.NumPad1 &&
+                    input != ConsoleKey.D2 && input != ConsoleKey.NumPad2 &&
+                    input != ConsoleKey.D3 && input != ConsoleKey.NumPad3)
                 {
-                    check = false;
-                    return Birthday;
-                    
+                    Console.WriteLine($"Invalid input! {message}");
+                    input = Console.ReadKey().Key;
                 }
-                else
-                {
-                    Console.WriteLine("Please enter a valid date <YYYY/MM/DD>: ");
-                    input = Console.ReadLine();
-                }
+                return input;
             }
-            return DateTime.Now;
+        }
+
+        public static ConsoleKey ValidatePaymentType(string message)
+        {
+            {
+                Console.Write(message);
+                ConsoleKey input = Console.ReadKey().Key;
+                while (input != ConsoleKey.D1 && input != ConsoleKey.NumPad1 &&
+                    input != ConsoleKey.D2 && input != ConsoleKey.NumPad2 &&
+                    input != ConsoleKey.D3 && input != ConsoleKey.NumPad3 &&
+                    input != ConsoleKey.D4 && input != ConsoleKey.NumPad4)
+                {
+                    Console.Write($"Invalid input! {message}");
+                    input = Console.ReadKey().Key;
+                }
+                return input;
+            }
+        }
+
+        public static DateTime ValidateDOB(string message)
+        {
+            Console.Write(message);
+            string dateFormat = "yyyy/MM/dd";
+            string input = Console.ReadLine();
+            DateTime Birthday;
+
+            while (!DateTime.TryParseExact(input, dateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out Birthday))
+            {
+                Console.Write($"Invalid inpupt! {message}");
+                input = Console.ReadLine();
+            }
+            return Birthday;
         }
     }
 }

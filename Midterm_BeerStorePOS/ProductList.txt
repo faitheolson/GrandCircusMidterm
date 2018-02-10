@@ -1,12 +1,12 @@
-Two Hearted, IPA, 6pk Bottles, 9.99
-PBR, Lager, 12pk Cans, 12.99
-Mayan Mocha, Stout, 6pk Bottles, 12.99
-Oberon, Wheat, 6pk Bottles, 9.99
-51K, IPA, 6pk Cans, 11.99
-Vintage Premium, Lager, 24pk Cans, 25.99
-Neapolitan Stout, Stout, 4pk Bottles, 13.99
-Dirty Blonde, Wheat, 6pk Bottles, 10.99
-M43, IPA, 4pk Cans, 16.99
-Stella Artois, Lager, 6pk Bottles, 12.99
-Madrugada Obscura, Stout, 750ml, 15.99
-Mr Bluesky, Wheat, 4pk Cans, 7.99
+Two Hearted,   IPA,   6pk Bottles,   9.99
+PBR,   Lager,   12pk Cans,   12.99
+Mayan Mocha,   Stout,   6pk Bottles,   12.99
+Oberon,   Wheat,   6pk Bottles,   9.99
+51K,   IPA,   6pk Cans,   11.99
+Vintage Premium,   Lager,   24pk Cans,   25.99
+Neapolitan Stout,   Stout,   4pk Bottles,   13.99
+Dirty Blonde,   Wheat,   6pk Bottles,   10.99
+M43,   IPA,   4pk Cans,   16.99
+Stella Artois,   Lager,   6pk Bottles,   12.99
+Madrugada Obscura,   Stout,   750ml,   15.99
+Mr Bluesky,   Wheat,   4pk Cans,   7.99

@@ -69,6 +69,9 @@ namespace Midterm_BeerStorePOS
                     {
 
                         BeerList.Remove(BeerList.Find(x => x.BeerName == Input));
+                        Console.WriteLine($"{Input} successfully removed from inventory.");
+                        System.Threading.Thread.Sleep(1500);
+
                         StreamWriter Writer = new StreamWriter(FileName);
 
                         foreach (Beer beer in BeerList)
@@ -81,7 +84,7 @@ namespace Midterm_BeerStorePOS
                     }
                     else
                     {
-                        Console.WriteLine($"{Input} is not a country on this list!");
+                        Console.WriteLine($"{Input} is not in the inventory. Are you sure you entered the name correctly?");
 
                     }
                 }
