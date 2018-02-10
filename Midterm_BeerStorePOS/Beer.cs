@@ -11,7 +11,7 @@ namespace Midterm_BeerStorePOS
     class Beer
     {
         //properties
-        public string BeerName {set; get;}
+        public string BeerName { set; get; }
         public string BeerStyle { set; get; }
         public string BeerDescription { set; get; }
         public string BeerPrice { set; get; }
@@ -43,6 +43,7 @@ namespace Midterm_BeerStorePOS
 
             return BeerList;
         }
+
         //add beer to the productlist file
         public static void AppendBeerList(string FileName, string Input)
         {
@@ -53,6 +54,7 @@ namespace Midterm_BeerStorePOS
             Writer.Close();
 
         }
+
         public static void RemoveBeer(string FileName, List<Beer> BeerList)
         {
             {
@@ -80,7 +82,7 @@ namespace Midterm_BeerStorePOS
                     else
                     {
                         Console.WriteLine($"{Input} is not a country on this list!");
-                        
+
                     }
                 }
             }
@@ -88,16 +90,19 @@ namespace Midterm_BeerStorePOS
 
         public static string NewBeerString()
         {
-            Console.WriteLine("Please enter beer Name:");
-            string name = Console.ReadLine();
-            Console.WriteLine("Please enter beer Style:");
-            string style = Console.ReadLine();
-            Console.WriteLine("Please enter beer description:");
-            string description = Console.ReadLine();
-            Console.WriteLine("Please enter beer price:");
-            string price = Console.ReadLine();
+            Console.Write("Beer Name: ");
+            string name = Validation.CheckForEmptyString(Console.ReadLine());
+            Console.Write("Style: ");
+            string style = Validation.CheckForEmptyString(Console.ReadLine());
+            Console.Write("Description: ");
+            string description = Validation.CheckForEmptyString(Console.ReadLine());
+            Console.Write("Price: ");
+            string price = Validation.CheckBeerPriceEntry(Console.ReadLine());
             string NewBeerString = $"{name}, {style}, {description}, {price}";
-            //Console.WriteLine($"You are adding {name}, {style}, {description}, {price} to your inventory.\n Please select Y to continue or N to cancel.");
+
+            Console.WriteLine($"{name} successfully added to inventory!");
+            System.Threading.Thread.Sleep(1000);
+
             return NewBeerString;
         }
     }

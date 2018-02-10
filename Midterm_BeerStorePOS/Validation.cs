@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace Midterm_BeerStorePOS
 {
@@ -26,30 +27,8 @@ namespace Midterm_BeerStorePOS
                 }
                 return input;
             }
-            //while (true)
-            //{
-
-            //    if (Regex.IsMatch(tempInput, "([1-4])"))
-            //    {
-            //        return tempInput;
-            //    }
-            //    Console.WriteLine("Please enter valid input (1-4)");
-            //    tempInput = Console.ReadLine();
-            //}
         }
 
-        //public static string validateAddItem(string tempAddItem)
-        //{
-        //    while (true)
-        //    {
-        //        if ((Regex.IsMatch(tempAddItem, "^(Y|N)$")))
-        //        {
-        //            return tempAddItem;
-        //        }
-        //        Console.WriteLine("Please enter a vaild answer!");
-        //        tempAddItem = Console.ReadLine().ToUpper();
-        //    }
-        //}
         public static ConsoleKey CheckYorN(string message) // changed Y or N validation from above to a consolekey. we can reuse this for any Y or N choice
         {
             Console.WriteLine(message);
@@ -65,18 +44,6 @@ namespace Midterm_BeerStorePOS
 
         public static bool ValidateItemChoice(string tempItemInput, List<Beer> Inventory) //updated this to take a list to make the length flexible
         {
-            //while (true)
-            //{
-            //    if (tempItemInput >= 1 && tempItemInput <= Inventory.Count) // switch out to beerSelection.count
-            //    {
-            //        return tempItemInput;
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine($"Please enter valid input! <1-{Inventory.Count}>");
-            //        tempItemInput = int.Parse(Console.ReadLine());
-            //    }             
-            //}
             if (Regex.Match(tempItemInput, @"^[1-9]{1}[0-9]*$").Success)//must contain number starting at 1 or more
             {
                 if (int.Parse(tempItemInput) >= 1 && int.Parse(tempItemInput) <= Inventory.Count)//input must be between lowest and highest on list
@@ -104,6 +71,7 @@ namespace Midterm_BeerStorePOS
                 tempQuantity = Console.ReadLine();
             }
         }
+
 
         public static string ValidateCredNumber(string tempCredNumber)
         {
@@ -166,7 +134,7 @@ namespace Midterm_BeerStorePOS
             while (true)
             {
 
-                if (Regex.IsMatch(tempCheck, @"^(\d{9} \d{6} \d{3})?$"))  // <=== This is actual check format 9 numbers space 6 numbers 3 numbers
+                if (Regex.IsMatch(tempCheck, @"^(\d{9} \d{6} \d{3})?$"))  //This is actual check format 9 numbers space 6 numbers 3 numbers
                 {
                     return tempCheck;
                 }
@@ -174,6 +142,68 @@ namespace Midterm_BeerStorePOS
                 tempCheck = Console.ReadLine();
                 // @"^[0-9]\d{16}?$"
             }
+        }
+
+
+        public static string CheckBeerPriceEntry(string input)
+        {
+            while (!Regex.Match(input, "^[1-9]{1}[0-9]{0,3}[.]{1}[0-9]{2}$").Success)
+            {
+                Console.Write("Invalid price. Please try again: ");
+                input = Console.ReadLine();
+            }
+            return input;
+        }
+
+        public static string CheckForEmptyString(string input)
+        {
+            while (String.IsNullOrEmpty(input))
+            {
+                Console.Write("Nothing entered! Please try again: ");
+                input = Console.ReadLine();
+            }
+            return input;
+        }
+
+        public static ConsoleKey ValidateInventoryManager(string message)
+        {
+            {
+                Console.WriteLine(message);
+                ConsoleKey input = Console.ReadKey().Key;
+                while (input != ConsoleKey.D1 && input != ConsoleKey.NumPad1 &&
+                    input != ConsoleKey.D2 && input != ConsoleKey.NumPad2 &&
+                    input != ConsoleKey.D3 && input != ConsoleKey.NumPad3)
+                {
+                    Console.WriteLine($"Invalid input! {message}");
+                    input = Console.ReadKey().Key;
+                }
+                return input;
+            }
+        }
+
+        public static DateTime ValidateDOB(string input)
+        {
+            string dateFormat = "yyyy/MM/dd";
+            input = Console.ReadLine();
+            DateTime Birthday;
+            bool check = true;
+
+            while (check == true)
+            {
+                if (DateTime.TryParseExact(input, dateFormat, CultureInfo.InvariantCulture,
+                   DateTimeStyles.None, out Birthday))
+                {
+                    check = false;
+                    return Birthday;
+                    
+                }
+                else
+                {
+                    Console.WriteLine("Please enter a valid date <YYYY/MM/DD>: ");
+                    input = Console.ReadLine();
+                }
+            }
+            return DateTime.Now;
         }
     }
 }

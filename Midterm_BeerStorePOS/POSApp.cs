@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.IO;
+using System.Globalization;
 
 namespace Midterm_BeerStorePOS
 {
@@ -15,20 +16,21 @@ namespace Midterm_BeerStorePOS
         public void StartApp()
         {
             bool repeat = true;
+            List<Cart> CartItems = new List<Cart>();
 
             while (repeat)
             {
                 List<Beer> BeerSelection = CreateList();
-                List<Cart> CartItems = new List<Cart>();
+
                 PrintMenu();
-                UserInput = Validation.ValidateSelection("Please enter your selection by number:"); //changed from string to console key
+                UserInput = Validation.ValidateSelection("Please enter your selection by number:");
                 if (UserInput == ConsoleKey.D1 || UserInput == ConsoleKey.NumPad1)
                 {
                     Console.Clear();
                     DisplaySelection(BeerSelection);
                     AddToCart(BeerSelection, CartItems);
                 }
-                else if (UserInput == ConsoleKey.D2|| UserInput == ConsoleKey.NumPad2)
+                else if (UserInput == ConsoleKey.D2 || UserInput == ConsoleKey.NumPad2)
                 {
                     DisplayCart(CartItems);
                 }
@@ -80,7 +82,7 @@ namespace Midterm_BeerStorePOS
                 Console.WriteLine($"{i + 1,-4}{BeerSelection[i].BeerName,-20}{BeerSelection[i].BeerStyle,-10}{BeerSelection[i].BeerDescription,-20}" +
                     $"{BeerSelection[i].BeerPrice,-10}");
             }
-            
+
         }
 
         private void AddToCart(List<Beer> BeerSelection, List<Cart> CartItems)
@@ -133,11 +135,11 @@ namespace Midterm_BeerStorePOS
         {
             //print items added to cart
             Console.Clear();
-            Console.WriteLine($"{"ITEM", -20}{"PRICE", -10}{"QTY",-5}{"SUBTOTAL",-10}");
+            Console.WriteLine($"{"ITEM",-20}{"PRICE",-10}{"QTY",-5}{"SUBTOTAL",-10}");
 
             foreach (Cart item in CartItems)
             {
-                Console.WriteLine($"{item.BeerName, -20}\t{item.BeerPrice,-10}\t{item.BeerQty,-5}\t{item.Subtotal,-10}");
+                Console.WriteLine($"{item.BeerName,-20}\t{item.BeerPrice,-10}\t{item.BeerQty,-5}\t{item.Subtotal,-10}");
             }
             Console.WriteLine();
 
@@ -162,6 +164,7 @@ namespace Midterm_BeerStorePOS
             }
             else if (ViewCart == 2 && GrandTotal > 0)
             {
+                Console.WriteLine();
                 GoToCheckout(GrandTotal, CartItems);
             }
             else if (ViewCart == 2 && GrandTotal == 0)
@@ -211,31 +214,44 @@ namespace Midterm_BeerStorePOS
 
         private void GoToCheckout(double total, List<Cart> CartItems)
         {
-            Console.WriteLine("Please select the number of the payment type:");
-            PrintCheckoutMenu();
-            int ChoosePaymentMethod = int.Parse(Console.ReadLine());
+            Console.WriteLine("Please enter date of birth <YYYY/MM/DD>: ");
+            string InputDOB = Console.ReadLine();
 
-            if (ChoosePaymentMethod == 1)
+            if (CheckDOB(InputDOB) < 21)
             {
-                CashPayment(total);
                 EmptyCart(CartItems);
-                Console.Read();
-            }
-            else if (ChoosePaymentMethod == 2)
-            {
-                CreditPayment(total);
-                Console.Read();
-            }
-            else if (ChoosePaymentMethod == 3)
-            {
-                CheckPayment(total);
-                EmptyCart(CartItems);
-                Console.Read();
+                Console.WriteLine("Not old enough to complete purchase! Order cancelled.");
+                System.Threading.Thread.Sleep(1000);
+                Console.Clear();
             }
             else
             {
-                Console.Clear();
-                PrintMenu();
+                Console.WriteLine("Please select the number of the payment type:");
+                PrintCheckoutMenu();
+                int ChoosePaymentMethod = int.Parse(Console.ReadLine());
+
+                if (ChoosePaymentMethod == 1)
+                {
+                    CashPayment(total);
+                    EmptyCart(CartItems);
+                    Console.Read();
+                }
+                else if (ChoosePaymentMethod == 2)
+                {
+                    CreditPayment(total);
+                    Console.Read();
+                }
+                else if (ChoosePaymentMethod == 3)
+                {
+                    CheckPayment(total);
+                    EmptyCart(CartItems);
+                    Console.Read();
+                }
+                else
+                {
+                    Console.Clear();
+                    PrintMenu();
+                }
             }
         }
 
@@ -286,7 +302,7 @@ namespace Midterm_BeerStorePOS
             }
         }
 
-        public void AddNewBeer() //Put this in Add Beer to Inventory Option
+        public void AddNewBeer()
         {
             Beer.AppendBeerList("../../ProductList.txt", Beer.NewBeerString());
             List<Beer> BeerSelection = CreateList();
@@ -294,26 +310,38 @@ namespace Midterm_BeerStorePOS
 
         public void RunInventoryManager(string FileName, List<Beer> BeerSelection)
         {
-            Console.WriteLine($"[1] ADD NEW BEER TO INVENTORY\n[2] REMOVE BEER FROM INVENTORY\n[3] RETURN TO MAIN MENU");
-            string UserInput = Console.ReadLine();
-            while (!Regex.IsMatch(UserInput,@"^1|2|3$"))
-            {
-                Console.WriteLine("Please enter valid entry!");
-            }
-            if (UserInput == "1")
+            Console.WriteLine($"[1] Add To Inventory\n[2] Remove From Inventory\n[3] Return To Main Menu");
+            ConsoleKey ManageInventory = Validation.ValidateInventoryManager("Please select option [1][2] or [3]");
+
+            if (ManageInventory == ConsoleKey.D1 || ManageInventory == ConsoleKey.NumPad1)
             {
                 AddNewBeer();
             }
-            else if (UserInput == "2")
+            else if (ManageInventory == ConsoleKey.D2 || ManageInventory == ConsoleKey.NumPad2)
             {
                 Console.Clear();
                 DisplaySelection(BeerSelection);
                 Beer.RemoveBeer(FileName, BeerSelection);
             }
-            else if (UserInput == "3")
+            else
             {
-
+                Console.Clear();
+                PrintMenu();
             }
+        }
+
+        public double CheckDOB(string input)
+        {
+            DateTime Birthday = Validation.ValidateDOB(input);
+            TimeSpan Difference;
+            double AgeOfBuyer;
+            double NumberOfDays;
+
+            Difference = (DateTime.Today - Birthday);
+            NumberOfDays = Difference.TotalDays;
+            AgeOfBuyer = NumberOfDays / 365.2422;
+
+            return AgeOfBuyer;
         }
     }
 }
