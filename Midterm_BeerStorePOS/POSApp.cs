@@ -16,12 +16,12 @@ namespace Midterm_BeerStorePOS
         public void StartApp()
         {
             bool repeat = true;
-            List<Cart> CartItems = new List<Cart>();
-
+            string FileName = "../../ ProductList.txt";//Added this so could refer to it in RunInventoryManager w/out putting actual address of txt file in the constructor.
+            List <Cart> CartItems = new List<Cart>();
+            Beer.FormatBeerTextFile(FileName);// This makes sure to do 1 WriteLine everytime program is opened in case the txt file has no open lines after last entry
+            List<Beer> BeerSelection = CreateList();//Moved this out of loop so it only happens once-now AddBeer and RemoveBeer are re-creating the list everytime there is a change.
             while (repeat)
             {
-                List<Beer> BeerSelection = CreateList();
-
                 PrintMenu();
                 UserInput = Validation.ValidateSelection("Please enter your selection by number:");
                 if (UserInput == ConsoleKey.D1 || UserInput == ConsoleKey.NumPad1)
@@ -37,7 +37,7 @@ namespace Midterm_BeerStorePOS
                 else if (UserInput == ConsoleKey.D3 || UserInput == ConsoleKey.NumPad3)
                 {
                     Console.Clear();
-                    RunInventoryManager("../../ProductList.txt", BeerSelection);
+                    RunInventoryManager(FileName, BeerSelection);
                     Console.Clear();
                 }
                 else
@@ -99,7 +99,8 @@ namespace Midterm_BeerStorePOS
             for (int i = 0; i < BeerSelection.Count; i++)
             {
                 Console.WriteLine($"{i + 1,-4}{BeerSelection[i].BeerName,-20}{BeerSelection[i].BeerStyle,-10}{BeerSelection[i].BeerDescription,-20}" +
-                    $"{BeerSelection[i].BeerPrice,-10}");
+                    $"{String.Format("{0:C}", double.Parse(BeerSelection[i].BeerPrice)),-10}");
+                
             }
             Console.WriteLine();
         }
@@ -130,10 +131,8 @@ namespace Midterm_BeerStorePOS
                 CartItems.Add(new Cart(BeerSelection[ItemNumber].BeerName, BeerSelection[ItemNumber].BeerStyle,
                 BeerSelection[ItemNumber].BeerDescription, BeerSelection[ItemNumber].BeerPrice, QuantityInput, LineSubtotal));
                 Console.WriteLine();
-                Console.WriteLine($"ADDED TO CART: {BeerSelection[ItemNumber].BeerName}\tPRICE{BeerSelection[ItemNumber].BeerPrice}\tQTY: {QuantityInput}" +
-                    $"\tITEM SUBTOTAL: {LineSubtotal}");
-
-                Console.WriteLine();
+                Console.WriteLine($"ADDED TO CART: {BeerSelection[ItemNumber].BeerName}\tPRICE:{String.Format("{0:C}", double.Parse(BeerSelection[ItemNumber].BeerPrice))}\tQTY: {QuantityInput}" +
+                    $"\tITEM SUBTOTAL:{String.Format("{0:C}",(LineSubtotal))}");
 
                 //continue or not
                 UserInput = Validation.CheckYorN("Would you like to add another item? <Y or N>");
@@ -159,9 +158,11 @@ namespace Midterm_BeerStorePOS
 
             foreach (Cart item in CartItems)
             {
-                Console.WriteLine($"{item.BeerName,-20}\t{item.BeerPrice,-10}\t{item.BeerQty,-10}\t{item.Subtotal,-10}");
+                Console.WriteLine($"{item.BeerName,-20}\t{String.Format("{0:C}", double.Parse(item.BeerPrice)),-10}\t{item.BeerQty,-10}\t{String.Format("{0:C}", (item.Subtotal)),-10}");
             }
             Console.WriteLine();
+            
+
 
             //calculate and display costs
             double Subtotal = CalculateCartTotal(CartItems);
@@ -330,10 +331,10 @@ namespace Midterm_BeerStorePOS
             }
         }
 
-        public void AddNewBeer()
+        public void AddNewBeer(List<Beer> BeerSelection,string FileName)
         {
-            Beer.AppendBeerList("../../ProductList.txt", Beer.NewBeerString());
-            List<Beer> BeerSelection = CreateList();
+            List <Beer> TempList = Beer.AddReWriteBeerSelection(FileName, Beer.NewBeerString(), BeerSelection);//TempList holds new Beerlist data temporarily
+            BeerSelection = TempList;//BeerList is assigned newly created list with updates
         }
 
         public void RunInventoryManager(string FileName, List<Beer> BeerSelection)
@@ -343,7 +344,7 @@ namespace Midterm_BeerStorePOS
 
             if (ManageInventory == ConsoleKey.D1 || ManageInventory == ConsoleKey.NumPad1)
             {
-                AddNewBeer();
+                AddNewBeer(BeerSelection,FileName);//Adding BeerSelection List to Construtor
             }
             else if (ManageInventory == ConsoleKey.D2 || ManageInventory == ConsoleKey.NumPad2)
             {
