@@ -50,7 +50,7 @@ namespace Midterm_BeerStorePOS
             string[] temp = Input.Split(',');//Break new beer Input into parts using commas to put into BeerSelection List Constructor
             BeerSelection.Add(new Beer(temp[0], temp[1], temp[2], temp[3])); //new beer is added to BeerSelection List
            
-            StreamWriter Writer = new StreamWriter(FileName);
+            StreamWriter Writer = new StreamWriter("../../ProductList.txt");
             foreach (Beer item in BeerSelection)//All beers in Beer Selection List are written to txt file- overwriting old list to include new beers to prevent any blank lines from being inserted between lines
             {
                 Writer.WriteLine($"{item.BeerName},{item.BeerStyle},{item.BeerDescription},{item.BeerPrice}");
