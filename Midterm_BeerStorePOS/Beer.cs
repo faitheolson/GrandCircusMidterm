@@ -58,6 +58,36 @@ namespace Midterm_BeerStorePOS
             Writer.Close();
             return BeerSelection;
         }
+        public static void RemoveBeerFromCart(List<Cart> CartItems)
+        {
+            {
+
+                bool repeat = true;
+                while (repeat)
+                {
+                    Console.WriteLine("\n\nWhich beer would you like to remove?"); ///create way to go back to main menu
+
+                    string Input = Console.ReadLine();
+
+                    if (CartItems.Find(x => x.BeerName.ToLower() == Input.ToLower()) != null)
+                    {
+
+                        CartItems.Remove(CartItems.Find(x => x.BeerName.ToLower() == Input.ToLower()));
+                        Console.WriteLine($"{Input.ToUpper()} successfully removed from inventory.");
+                        Console.ReadKey();
+                        repeat = false;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{Input} is not in the cart. Are you sure you entered the name correctly?");
+
+                    }
+                }
+            }
+
+
+
+        }
 
         public static void RemoveBeer(string FileName, List<Beer> BeerSelection)//Changed List name to BeerSelection throughout entire method for consistency. 
         {

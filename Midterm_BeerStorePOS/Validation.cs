@@ -187,7 +187,8 @@ namespace Midterm_BeerStorePOS
                 ConsoleKey input = Console.ReadKey().Key;
                 while (input != ConsoleKey.D1 && input != ConsoleKey.NumPad1 &&
                     input != ConsoleKey.D2 && input != ConsoleKey.NumPad2 &&
-                    input != ConsoleKey.D3 && input != ConsoleKey.NumPad3)
+                    input != ConsoleKey.D3 && input != ConsoleKey.NumPad3 &&
+                    input != ConsoleKey.D4 && input != ConsoleKey.NumPad4)
                 {
                     Console.WriteLine($"Invalid input! {message}");
                     input = Console.ReadKey().Key;

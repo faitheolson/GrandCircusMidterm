@@ -24,7 +24,7 @@ namespace Midterm_BeerStorePOS
             while (repeat)
             {
                 PrintMenu();
-                UserInput = Validation.ValidateSelection("Please enter your selection by number:");
+                UserInput = Validation.ValidateSelection("\nPlease enter your selection by number:");
                 if (UserInput == ConsoleKey.D1 || UserInput == ConsoleKey.NumPad1)
                 {
                     Console.Clear();
@@ -47,7 +47,7 @@ namespace Midterm_BeerStorePOS
                 {
                     if (CartItems.Count > 0)
                     {
-                        ConsoleKey WantToExit = Validation.CheckYorN("There are items in the cart. Are you sure you want to exit? <Y or N?>");
+                        ConsoleKey WantToExit = Validation.CheckYorN("\n\nThere are items in the cart. Are you sure you want to exit? <Y or N?>");
 
                         if (WantToExit == ConsoleKey.Y)
                         {
@@ -114,7 +114,7 @@ namespace Midterm_BeerStorePOS
             while (repeat)
             {
                 //user chooses item
-                Console.Write($"Please select item to add to cart <1 - {BeerSelection.Count}>: ");
+                Console.Write($"\nPlease select item to add to cart <1 - {BeerSelection.Count}>: ");
                 string ItemInput = Console.ReadLine();
                 while (Validation.ValidateItemChoice(ItemInput, BeerSelection) == false)
                 {
@@ -124,7 +124,7 @@ namespace Midterm_BeerStorePOS
                 int ItemNumber = int.Parse(ItemInput) - 1;
 
                 //get quantity
-                Console.Write("Please enter quantity: ");
+                Console.Write("\nPlease enter quantity: ");
                 double QuantityInput = double.Parse(Validation.ValidateQuantity(Console.ReadLine()));
 
                 //calc subtotal
@@ -138,7 +138,7 @@ namespace Midterm_BeerStorePOS
                     $"\tITEM SUBTOTAL:{String.Format("{0:C}",(LineSubtotal))}");
 
                 //continue or not
-                UserInput = Validation.CheckYorN("Would you like to add another item? <Y or N>");
+                UserInput = Validation.CheckYorN("\nWould you like to add another item? <Y or N>");
 
                 if (UserInput == ConsoleKey.N)
                 {
@@ -182,9 +182,9 @@ namespace Midterm_BeerStorePOS
 
         private void DisplayCartMenu(List<Cart> CartItems, double GrandTotal)
         {
-            Console.WriteLine("[1]Main Menu\n[2]Check Out\n[3]Empty Cart");
+            Console.WriteLine("\n[1]Main Menu\n[2]Check Out\n[3]Empty Cart\n[4]Remove Cart Item");
 
-            ConsoleKey CartAction = Validation.ValidateCartAction("Please choose option [1][2] or [3]: ");
+            ConsoleKey CartAction = Validation.ValidateCartAction("\nPlease choose option [1][2][3] or [4]: ");
 
             if (CartAction == ConsoleKey.D1 || CartAction == ConsoleKey.NumPad1)
             {
@@ -202,9 +202,13 @@ namespace Midterm_BeerStorePOS
                 System.Threading.Thread.Sleep(1000);
                 PrintMenu();
             }
+            else if (CartAction == ConsoleKey.D4 || CartAction == ConsoleKey.NumPad4)
+            {
+                Beer.RemoveBeerFromCart(CartItems);
+            }
             else
             {
-                ConsoleKey AreYouSure = Validation.CheckYorN("Are you sure you want to empty your shopping cart? (<Y> or <N>)");
+                ConsoleKey AreYouSure = Validation.CheckYorN("\nAre you sure you want to empty your shopping cart? (<Y> or <N>)");
 
                 if (AreYouSure == ConsoleKey.Y)
                 {
@@ -259,7 +263,7 @@ namespace Midterm_BeerStorePOS
                 DisplayCartTotals(CartItems);
                 PrintCheckoutMenu();
 
-                ConsoleKey ChoosePaymentMethod = Validation.ValidatePaymentType("Please choose option [1][2][3] or [4]: ");
+                ConsoleKey ChoosePaymentMethod = Validation.ValidatePaymentType("\nPlease choose option [1][2][3] or [4]: ");
 
                 if (ChoosePaymentMethod == ConsoleKey.D1 || ChoosePaymentMethod == ConsoleKey.NumPad1)
                 {
@@ -286,20 +290,20 @@ namespace Midterm_BeerStorePOS
         public void CashPayment(double total, List<Cart> CartItems)
         {
             Console.WriteLine();
-            Console.WriteLine("ENTER CASH TENDERED:");
+            Console.WriteLine("\nENTER CASH TENDERED:");
             double dollars = double.Parse(Validation.ValidateMoneyRecieved(Console.ReadLine()));
             double change = 0;
 
             while (dollars < total)
             {
-                Console.Write("INSUFFICIENT FUNDS! ENTER CASH TENDERED:");
+                Console.Write("\nINSUFFICIENT FUNDS! ENTER CASH TENDERED:");
                 dollars = double.Parse(Validation.ValidateMoneyRecieved(Console.ReadLine()));
             }
             change = dollars - total;
 
             PlayRegister();
             PrintReceipt(CartItems);
-            Console.WriteLine($"CASH TENDERED:\t{dollars.ToString(("C2"))}\nCHANGE:\t\t{change.ToString(("C2"))}");
+            Console.WriteLine($"\nCASH TENDERED:\t{dollars.ToString(("C2"))}\nCHANGE:\t\t{change.ToString(("C2"))}");
             EmptyCart(CartItems);
             Console.WriteLine("\n\n\n\n<PRESS ENTER TO RETURN TO MAIN MENU>");
             Console.ReadKey();
@@ -308,11 +312,11 @@ namespace Midterm_BeerStorePOS
         public void CreditPayment(double total, List<Cart> CartItems)
         {
             Console.WriteLine();
-            Console.WriteLine("ENTER CARD NUMBER <XXXX-XXXX-XXXX-XXXX, including dashes>:");
+            Console.WriteLine("\nENTER CARD NUMBER <XXXX-XXXX-XXXX-XXXX, including dashes>:");
             string CardNumber = Validation.ValidateCredNumber(Console.ReadLine()); //prompt
-            Console.Write("ENTER CCV: ");
+            Console.Write("\nENTER CCV: ");
             string CCV = Validation.ValidateCCV(Console.ReadLine()); //prompt
-            Console.Write("ENTER EXPIRATION DATE <MM/YY> OR <MM/YYYY>: ");
+            Console.Write("\nENTER EXPIRATION DATE <MM/YY> OR <MM/YYYY>: ");
             string Expiration = Validation.ValidateExpDate(Console.ReadLine()); //prompt, ensure format is acceptable (regex?)
             string lastfour = CardNumber.Substring(CardNumber.Length - 4);
 
@@ -327,13 +331,13 @@ namespace Midterm_BeerStorePOS
         public void CheckPayment(double total, List<Cart> CartItems)
         {
             Console.WriteLine();
-            Console.WriteLine("ENTER CHECK NUMBER <XXXXXXXXX XXXXXX XXX, including spaces>:");
+            Console.WriteLine("\nENTER CHECK NUMBER <XXXXXXXXX XXXXXX XXX, including spaces>:");
             string CheckNumber = Validation.ValidateCheck(Console.ReadLine());
             string endcheck = CheckNumber.Substring(CheckNumber.Length - 3);
 
             PlayRegister();
             PrintReceipt(CartItems);
-            Console.WriteLine($"***CHECK ENDING IN {endcheck} RECEIVED FOR {total.ToString("C2")}***");
+            Console.WriteLine($"\n***CHECK ENDING IN {endcheck} RECEIVED FOR {total.ToString("C2")}***");
             EmptyCart(CartItems);
             Console.WriteLine("\n\n\n\n<PRESS ENTER TO RETURN TO MAIN MENU>");
             Console.ReadKey();
@@ -355,7 +359,7 @@ namespace Midterm_BeerStorePOS
 
         public void RunInventoryManager(string FileName, List<Beer> BeerSelection)
         {
-            Console.WriteLine($"[1] Add To Inventory\n[2] Remove From Inventory\n[3] Return To Main Menu");
+            Console.WriteLine($"\n[1] Add To Inventory\n[2] Remove From Inventory\n[3] Return To Main Menu");
             ConsoleKey ManageInventory = Validation.ValidateInventoryManager("Please select option [1][2] or [3]");
 
             if (ManageInventory == ConsoleKey.D1 || ManageInventory == ConsoleKey.NumPad1)
