@@ -20,6 +20,7 @@ namespace Midterm_BeerStorePOS
             List <Cart> CartItems = new List<Cart>();
             Beer.FormatBeerTextFile(FileName);// This makes sure to do 1 WriteLine everytime program is opened in case the txt file has no open lines after last entry
             List<Beer> BeerSelection = CreateList();//Moved this out of loop so it only happens once-now AddBeer and RemoveBeer are re-creating the list everytime there is a change.
+
             while (repeat)
             {
                 PrintMenu();
@@ -32,7 +33,9 @@ namespace Midterm_BeerStorePOS
                 }
                 else if (UserInput == ConsoleKey.D2 || UserInput == ConsoleKey.NumPad2)
                 {
+                    Console.Clear();
                     DisplayCart(CartItems);
+                    DisplayCartMenu(CartItems, DisplayCartTotals(CartItems));
                 }
                 else if (UserInput == ConsoleKey.D3 || UserInput == ConsoleKey.NumPad3)
                 {
@@ -152,7 +155,6 @@ namespace Midterm_BeerStorePOS
         private void DisplayCart(List<Cart> CartItems)
         {
             //print items added to cart
-            Console.Clear();
             Console.WriteLine($"{"ITEM",-25}{"PRICE",-15}{"QTY",-15}{"SUBTOTAL",-10}");
             Console.WriteLine(new string('-', 75));
 
@@ -161,9 +163,10 @@ namespace Midterm_BeerStorePOS
                 Console.WriteLine($"{item.BeerName,-20}\t{String.Format("{0:C}", double.Parse(item.BeerPrice)),-10}\t{item.BeerQty,-10}\t{String.Format("{0:C}", (item.Subtotal)),-10}");
             }
             Console.WriteLine();
-            
+        }
 
-
+        private double DisplayCartTotals(List<Cart> CartItems)
+        {
             //calculate and display costs
             double Subtotal = CalculateCartTotal(CartItems);
             double TaxOwed = (Subtotal * 1.06) - Subtotal;
@@ -172,8 +175,13 @@ namespace Midterm_BeerStorePOS
             Console.WriteLine($"SUBTOTAL:\t{Subtotal.ToString("C2")}");
             Console.WriteLine($"TAX:\t\t{TaxOwed.ToString("C2")}");
             Console.WriteLine($"ORDER TOTAL:\t{GrandTotal.ToString("C2")}");
-
             Console.WriteLine();
+
+            return GrandTotal;
+        }
+
+        private void DisplayCartMenu(List<Cart> CartItems, double GrandTotal)
+        {
             Console.WriteLine("[1]Main Menu\n[2]Check Out\n[3]Empty Cart");
 
             ConsoleKey CartAction = Validation.ValidateCartAction("Please choose option [1][2] or [3]: ");
@@ -202,11 +210,13 @@ namespace Midterm_BeerStorePOS
                 {
                     EmptyCart(CartItems);
                     DisplayCart(CartItems);
+                    DisplayCartMenu(CartItems, DisplayCartTotals(CartItems));
                 }
                 else
                 {
                     Console.Clear();
                     DisplayCart(CartItems);
+                    DisplayCartMenu(CartItems, DisplayCartTotals(CartItems));
                 }
             }
         }
@@ -238,12 +248,15 @@ namespace Midterm_BeerStorePOS
             {
                 EmptyCart(CartItems);
                 Console.WriteLine("Not old enough to complete purchase! Order cancelled.");
+                PlaySiren();
                 System.Threading.Thread.Sleep(1000);
                 Console.Clear();
             }
             else
             {
-                Console.WriteLine();
+                Console.Clear();
+                PlayBottleOpen();
+                DisplayCartTotals(CartItems);
                 PrintCheckoutMenu();
 
                 ConsoleKey ChoosePaymentMethod = Validation.ValidatePaymentType("Please choose option [1][2][3] or [4]: ");
@@ -264,7 +277,8 @@ namespace Midterm_BeerStorePOS
                 else
                 {
                     Console.Clear();
-                    PrintMenu();
+                    DisplayCart(CartItems);
+                    DisplayCartMenu(CartItems, DisplayCartTotals(CartItems));
                 }
             }
         }
@@ -278,17 +292,17 @@ namespace Midterm_BeerStorePOS
 
             while (dollars < total)
             {
-                Console.Write("INSUFFICIENT! ENTER CASH TENDERED:");
+                Console.Write("INSUFFICIENT FUNDS! ENTER CASH TENDERED:");
                 dollars = double.Parse(Validation.ValidateMoneyRecieved(Console.ReadLine()));
             }
             change = dollars - total;
 
-
+            PlayRegister();
             PrintReceipt(CartItems);
             Console.WriteLine($"CASH TENDERED:\t{dollars.ToString(("C2"))}\nCHANGE:\t\t{change.ToString(("C2"))}");
             EmptyCart(CartItems);
-            Console.WriteLine("\n\n\n\n<PRESS ANY KEY TO RETURN TO MAIN MENU");
-            Console.Read();
+            Console.WriteLine("\n\n\n\n<PRESS ENTER TO RETURN TO MAIN MENU>");
+            Console.ReadKey();
         }
 
         public void CreditPayment(double total, List<Cart> CartItems)
@@ -302,11 +316,12 @@ namespace Midterm_BeerStorePOS
             string Expiration = Validation.ValidateExpDate(Console.ReadLine()); //prompt, ensure format is acceptable (regex?)
             string lastfour = CardNumber.Substring(CardNumber.Length - 4);
 
+            PlayRegister();
             PrintReceipt(CartItems);
             Console.Write($"***{total.ToString("C2")} CHARGED TO CARD ENDING {lastfour}***");
             EmptyCart(CartItems);
-            Console.WriteLine("\n\n\n\n<PRESS ANY KEY TO RETURN TO MAIN MENU");
-            Console.Read();
+            Console.WriteLine("\n\n\n\n<PRESS ENTER TO RETURN TO MAIN MENU>");
+            Console.ReadKey();
         }
 
         public void CheckPayment(double total, List<Cart> CartItems)
@@ -316,11 +331,12 @@ namespace Midterm_BeerStorePOS
             string CheckNumber = Validation.ValidateCheck(Console.ReadLine());
             string endcheck = CheckNumber.Substring(CheckNumber.Length - 3);
 
+            PlayRegister();
             PrintReceipt(CartItems);
             Console.WriteLine($"***CHECK ENDING IN {endcheck} RECEIVED FOR {total.ToString("C2")}***");
             EmptyCart(CartItems);
-            Console.WriteLine("\n\n\n\n<PRESS ANY KEY TO RETURN TO MAIN MENU");
-            Console.Read();
+            Console.WriteLine("\n\n\n\n<PRESS ENTER TO RETURN TO MAIN MENU>");
+            Console.ReadKey();
         }
 
         public void EmptyCart(List<Cart> CartItems)
@@ -377,23 +393,27 @@ namespace Midterm_BeerStorePOS
         {
             Console.Clear();
             Console.WriteLine("THANK YOU FOR YOUR PURCHASE ON " + DateTime.Now+ "\nPLEASE SHOP WITH US AGAIN SOON!");
-            Console.WriteLine($"{"ITEM",-25}{"PRICE",-15}{"QTY",-15}{"SUBTOTAL",-10}");
-            Console.WriteLine(new string('-', 75));
-
-            foreach (Cart item in CartItems)
-            {
-                Console.WriteLine($"{item.BeerName,-20}\t{item.BeerPrice,-10}\t{item.BeerQty,-10}\t{item.Subtotal,-10}");
-            }
-            Console.WriteLine();
-
-            //calculate and display costs
-            double Subtotal = CalculateCartTotal(CartItems);
-            double TaxOwed = (Subtotal * 1.06) - Subtotal;
-            double GrandTotal = Subtotal + TaxOwed;
-
-            Console.WriteLine($"SUBTOTAL:\t{Subtotal.ToString("C2")}");
-            Console.WriteLine($"TAX:\t\t{TaxOwed.ToString("C2")}");
-            Console.WriteLine($"ORDER TOTAL:\t{GrandTotal.ToString("C2")}");
+            DisplayCart(CartItems);
+            DisplayCartTotals(CartItems);
         }
+
+        public void PlaySiren()
+        {
+            System.Media.SoundPlayer SirenSound = new System.Media.SoundPlayer(@"../../Siren-SoundBible.com-1094437108.wav");
+            SirenSound.Play();
+        }
+
+        public void PlayBottleOpen()
+        {
+            System.Media.SoundPlayer BottleOpen = new System.Media.SoundPlayer(@"../../bottle-open-1.wav");
+            BottleOpen.Play();
+        }
+
+        public void PlayRegister()
+        {
+            System.Media.SoundPlayer ChaChing = new System.Media.SoundPlayer(@"../../Cash Register Cha Ching-SoundBible.com-184076484.wav");
+            ChaChing.Play();
+        }
+
     }
 }

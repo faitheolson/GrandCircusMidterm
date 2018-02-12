@@ -56,7 +56,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include=".gitignore" />
+    <Content Include="bottle-open-1.wav" />
+    <Content Include="Cash Register Cha Ching-SoundBible.com-184076484.wav" />
     <Content Include="ProductList.txt" />
+    <Content Include="Siren-SoundBible.com-1094437108.wav" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
